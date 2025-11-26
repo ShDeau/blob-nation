@@ -1,0 +1,141 @@
+type Smol_blob = u32
+type Big_blob = []Smol_blob
+
+const mask_stat        := Smol_blob(0b11111111111111111111111111111111)
+const mask_health      := Smol_blob(0b11111000000000000000000000000000)
+const mask_hunger      := Smol_blob(0b00000111000000000000000000000000)
+const mask_happiness   := Smol_blob(0b00000000111110000000000000000000)
+const mask_energy      := Smol_blob(0b00000000000001110000000000000000)
+const mask_loyalty     := Smol_blob(0b00000000000000001110000000000000)
+const mask_speed       := Smol_blob(0b00000000000000000001100000000000)
+const mask_force       := Smol_blob(0b00000000000000000000011000000000)
+const mask_job         := Smol_blob(0b00000000000000000000000111000000)
+const mask_personality := Smol_blob(0b00000000000000000000000000111111)
+
+fn (b Smol_blob) health      () u32 {return (b & mask_health)      >> 27}
+fn (b Smol_blob) hunger      () u32 {return (b & mask_hunger)      >> 24}
+fn (b Smol_blob) happiness   () u32 {return (b & mask_happiness)   >> 19}
+fn (b Smol_blob) energy      () u32 {return (b & mask_energy)      >> 16}
+fn (b Smol_blob) loyalty     () u32 {return (b & mask_loyalty)     >> 13}
+fn (b Smol_blob) speed       () u32 {return (b & mask_speed)       >> 11}
+fn (b Smol_blob) force       () u32 {return (b & mask_force)       >> 9}
+fn (b Smol_blob) job         () u32 {return (b & mask_job)         >> 6}
+fn (b Smol_blob) personality () u32 {return (b & mask_personality) >> 0}
+fn make_blob (health u32, hunger u32, happiness u32, energy u32, loyalty u32, speed u32, force u32, job u32, personality u32) Smol_blob {
+    return Smol_blob(
+        health        << 27
+        + hunger      << 24
+        + happiness   << 19
+        + energy      << 16
+        + loyalty     << 13
+        + speed       << 11
+        + force       << 9
+        + job         << 6
+        + personality << 0
+    )
+}
+
+fn (b Big_blob) health       () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.health()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) hunger       () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.hunger()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) happiness    () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.happiness()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) energy       () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.energy()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) loyalty      () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.loyalty()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) speed       () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.speed()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) force       () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.force()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) job         () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.job()
+    }
+    return av / u32(b.len)
+}
+fn (b Big_blob) personality () u32 {
+    mut av := u32(0)
+    for i in b {
+        av += i.personality()
+    }
+    return av / u32(b.len)
+}
+
+
+fn reproduce_single_blobs (b1 Smol_blob, b2 Smol_blob) Smol_blob {
+    return make_blob(
+        (b1.health()      + b2.health())      / 2,
+        (b1.hunger()      + b2.hunger())      / 2,
+        (b1.happiness()   + b2.happiness())   / 2,
+        (b1.energy()      + b2.energy())      / 2,
+        (b1.loyalty()     + b2.loyalty())     / 2,
+        (b1.speed()       + b2.speed())       / 2,
+        (b1.force()       + b2.force())       / 2,
+        (b1.job()         + b2.job())         / 2,
+        (b1.personality() + b2.personality()) / 2
+    )
+}
+
+fn (mut b Big_blob) reproduce () {
+    mut to_reproduce := b.filter(it.happiness() > mask_stat.happiness() / 2)
+    for j in 0..to_reproduce.len {
+        println("blob n°${j} : ${to_reproduce[j]:b}")
+    }
+    if to_reproduce.len % 2 == 1 {b.pop()}
+    for j in 0..to_reproduce.len {
+        println("blob n°${j} : ${to_reproduce[j]:b}")
+    }
+dump(to_reproduce.len /2)
+    i_max := to_reproduce.len /2
+    for i in 0..i_max {
+    dump(i)
+        new_blob := reproduce_single_blobs(to_reproduce[i], to_reproduce[i+1])
+        println("blob b1 : ${to_reproduce[i]:b}")
+        println("blob b2 : ${to_reproduce[i+1]:b}")
+        println("blob new_blob : ${new_blob:b}")
+        to_reproduce.delete_many(i, 2)
+        to_reproduce.insert(i, new_blob)
+    for j in 0..to_reproduce.len {
+        println("blob n°${j} : ${to_reproduce[j]:b}")
+    }
+    }
+    b.prepend(to_reproduce)
+}
