@@ -34,6 +34,19 @@ fn make_blob (health u32, hunger u32, happiness u32, energy u32, loyalty u32, sp
         + personality << 0
     )
 }
+fn (b Smol_blob) print_smol_blob () {
+    println("Smol_blob :")
+    println("\thealth      : ${b.health()}")
+    println("\thunger      : ${b.hunger()}")
+    println("\thappiness   : ${b.happiness()}")
+    println("\tenergy      : ${b.energy()}")
+    println("\tloyalty     : ${b.loyalty()}")
+    println("\tspeed       : ${b.speed()}")
+    println("\tforce       : ${b.force()}")
+    println("\tjob         : ${b.job()}")
+    println("\tpersonality : ${b.personality()}")
+    println("}")
+}
 
 fn (b Big_blob) health       () u32 {
     mut av := u32(0)
@@ -100,42 +113,30 @@ fn (b Big_blob) personality () u32 {
 }
 
 
-fn reproduce_single_blobs (b1 Smol_blob, b2 Smol_blob) Smol_blob {
+fn reproduce_single_blobs (b1 &Smol_blob, b2 &Smol_blob) Smol_blob {
+    unsafe{*b1 = *b1 - (*b1).energy() << 16 + ((*b1).energy() / 2) << 16}
+    unsafe{*b2 = *b2 - (*b2).energy() << 16 + ((*b2).energy() / 2) << 16}
     return make_blob(
-        (b1.health()      + b2.health())      / 2,
-        (b1.hunger()      + b2.hunger())      / 2,
-        (b1.happiness()   + b2.happiness())   / 2,
-        (b1.energy()      + b2.energy())      / 2,
-        (b1.loyalty()     + b2.loyalty())     / 2,
-        (b1.speed()       + b2.speed())       / 2,
-        (b1.force()       + b2.force())       / 2,
-        (b1.job()         + b2.job())         / 2,
-        (b1.personality() + b2.personality()) / 2
+        ((*b1).health()      + (*b2).health())      / 2,
+        ((*b1).hunger()      + (*b2).hunger())      / 2,
+        ((*b1).happiness()   + (*b2).happiness())   / 2,
+        ((*b1).energy()      + (*b2).energy())      / 2,
+        ((*b1).loyalty()     + (*b2).loyalty())     / 2,
+        ((*b1).speed()       + (*b2).speed())       / 2,
+        ((*b1).force()       + (*b2).force())       / 2,
+        ((*b1).job()         + (*b2).job())         / 2,
+        ((*b1).personality() + (*b2).personality()) / 2
     )
 }
 
 fn (mut b Big_blob) reproduce () {
     mut to_reproduce := b.filter(it.happiness() > mask_stat.happiness() / 2)
-    for j in 0..to_reproduce.len {
-        println("blob n°${j} : ${to_reproduce[j]:b}")
-    }
     if to_reproduce.len % 2 == 1 {b.pop()}
-    for j in 0..to_reproduce.len {
-        println("blob n°${j} : ${to_reproduce[j]:b}")
-    }
-dump(to_reproduce.len /2)
     i_max := to_reproduce.len /2
     for i in 0..i_max {
-    dump(i)
-        new_blob := reproduce_single_blobs(to_reproduce[i], to_reproduce[i+1])
-        println("blob b1 : ${to_reproduce[i]:b}")
-        println("blob b2 : ${to_reproduce[i+1]:b}")
-        println("blob new_blob : ${new_blob:b}")
+        new_blob := reproduce_single_blobs(&to_reproduce[i], &to_reproduce[i+1])
         to_reproduce.delete_many(i, 2)
         to_reproduce.insert(i, new_blob)
-    for j in 0..to_reproduce.len {
-        println("blob n°${j} : ${to_reproduce[j]:b}")
-    }
     }
     b.prepend(to_reproduce)
 }
