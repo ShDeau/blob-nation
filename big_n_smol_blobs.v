@@ -151,11 +151,11 @@ fn (mut b Smol_blob) eating_smol_blob (food Food_types) {
     match food {
         .none {}
         .mango {
-            new_happiness := max_u32(mask_stat.happiness(), b.happiness() + 1)
+            new_happiness := min_u32(mask_stat.happiness(), b.happiness() + 1)
             b -= b.happiness() << 19
             b += new_happiness << 19
 
-            new_hunger := max_u32(mask_stat.hunger(), b.hunger() + 1)
+            new_hunger := min_u32(mask_stat.hunger(), b.hunger() + 1)
             b -= b.hunger() << 24
             b += new_hunger << 24
         }
@@ -164,14 +164,18 @@ fn (mut b Smol_blob) eating_smol_blob (food Food_types) {
             b -= b.happiness() << 19
             b += new_happiness << 19
 
-            new_hunger := max_u32(mask_stat.hunger(), b.hunger() + 1)
+            new_hunger := min_u32(mask_stat.hunger(), b.hunger() + 1)
             b -= b.hunger() << 24
             b += new_hunger << 24}
         .meat {
-            new_hunger := max_u32(mask_stat.hunger(), b.hunger() + 2)
+            new_hunger := min_u32(mask_stat.hunger(), b.hunger() + 2)
             b -= b.hunger() << 24
             b += new_hunger << 24}
     }
 }
 
-fn (mut b Big_blob) eating (food Food_types) {}
+fn (mut b Big_blob) eating (food Food_types) {
+    for mut i in b {
+        i.eating_smol_blob(food)
+    }
+}

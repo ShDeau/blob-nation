@@ -9,5 +9,12 @@ fn main () {
                                 Smol_blob(0b11010_101_10101_101_010_10_10_101_010101),
                                 Smol_blob(0b10101_010_10101_010_101_01_01_010_101010)]
                             )
-    flock_exemple.reproduce()
+    for i in flock_exemple {
+        i.print_smol_blob()
+    }
+    flock_exemple.eating(Food_types.meat)
+    println("\n")
+    for i in flock_exemple {
+        i.print_smol_blob()
+    }
 }
