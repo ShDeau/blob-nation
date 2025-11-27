@@ -1,5 +1,11 @@
 type Smol_blob = u32
 type Big_blob = []Smol_blob
+enum Food_types {
+    none
+    mango
+    radis
+    meat
+}
 
 const mask_stat        := Smol_blob(0b11111111111111111111111111111111)
 const mask_health      := Smol_blob(0b11111000000000000000000000000000)
@@ -140,3 +146,32 @@ fn (mut b Big_blob) reproduce () {
     }
     b.prepend(to_reproduce)
 }
+
+fn (mut b Smol_blob) eating_smol_blob (food Food_types) {
+    match food {
+        .none {}
+        .mango {
+            new_happiness := max_u32(mask_stat.happiness(), b.happiness() + 1)
+            b -= b.happiness() << 19
+            b += new_happiness << 19
+
+            new_hunger := max_u32(mask_stat.hunger(), b.hunger() + 1)
+            b -= b.hunger() << 24
+            b += new_hunger << 24
+        }
+        .radis {
+            new_happiness := max_u32(0, b.happiness() - 1)
+            b -= b.happiness() << 19
+            b += new_happiness << 19
+
+            new_hunger := max_u32(mask_stat.hunger(), b.hunger() + 1)
+            b -= b.hunger() << 24
+            b += new_hunger << 24}
+        .meat {
+            new_hunger := max_u32(mask_stat.hunger(), b.hunger() + 2)
+            b -= b.hunger() << 24
+            b += new_hunger << 24}
+    }
+}
+
+fn (mut b Big_blob) eating (food Food_types) {}
