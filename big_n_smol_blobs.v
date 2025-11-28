@@ -179,3 +179,16 @@ fn (mut b Big_blob) eating (food Food_types) {
         i.eating_smol_blob(food)
     }
 }
+
+fn (b Smol_blob) is_dead () bool {
+    return b.health() == 0
+}
+
+fn (mut b Big_blob) remove_dead_blobs () {
+    len := b.len
+    for i := len-1 ; i >= 0 ; i-- {
+        if b[i].is_dead() {
+            b.delete(i)
+        }
+    }
+}

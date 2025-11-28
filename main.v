@@ -3,17 +3,17 @@
 fn main () {
 
     mut flock_exemple := Big_blob( [Smol_blob(0b11111_111_11111_111_111_11_11_111_111111),
-                                Smol_blob(0b10000_000_11111_000_000_00_00_000_000000),
+                                Smol_blob(0b00000_000_11111_000_000_00_00_000_000000),
                                 Smol_blob(0b11111_111_00000_111_111_11_11_111_111111),
-                                Smol_blob(0b10000_000_00000_000_000_00_00_000_000000),
+                                Smol_blob(0b00000_000_00000_000_000_00_00_000_000000),
                                 Smol_blob(0b11010_101_10101_101_010_10_10_101_010101),
                                 Smol_blob(0b10101_010_10101_010_101_01_01_010_101010)]
                             )
     for i in flock_exemple {
         i.print_smol_blob()
     }
-    flock_exemple.eating(Food_types.meat)
-    println("\n")
+    flock_exemple.remove_dead_blobs()
+    println("\n\n")
     for i in flock_exemple {
         i.print_smol_blob()
     }
